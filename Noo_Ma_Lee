@@ -1,0 +1,120 @@
+#define Speaker 32
+#define Button 21
+hw_timer_t *My_timer = NULL;
+
+int C = 1047; //do
+int D = 1175; //re
+int E = 1319; //mi
+int F = 1397; //fa
+int G = 1568; //so
+int NOTE = 1000000 / E;
+int Open = 1;
+int t = 5;
+int sp = 50;
+
+void IRAM_ATTR onTimer(){
+  if (Open == 1) {
+    digitalWrite(Speaker, !digitalRead(Speaker));
+  } else {
+    digitalWrite(Speaker, LOW);
+  }
+  timerAlarmWrite(My_timer, NOTE, true); // Update the alarm value
+}
+
+void IRAM_ATTR IO_INT_ISR()
+{
+  t--;
+  if(t == 0){
+    t = 5;
+  }
+}
+
+void setup() {
+  pinMode(Speaker, OUTPUT);
+  pinMode(Button, INPUT);
+  digitalWrite(Speaker, LOW);
+  My_timer = timerBegin(0, 80, true);
+  timerAttachInterrupt(My_timer, &onTimer, true);
+  timerAlarmWrite(My_timer, NOTE, true);
+  timerAlarmEnable(My_timer);
+  attachInterrupt(Button, IO_INT_ISR, RISING);
+}
+
+void loop() {
+  Quarter(t);
+  NOTE = 1000000 / D;
+  Quarter(t);
+  NOTE = 1000000 / C;
+  Quarter(t);
+  NOTE = 1000000 / D;
+  Quarter(t);
+
+  NOTE = 1000000 / E;
+  Quarter(t);
+  Quarter(t);
+  Half(t);
+
+  NOTE = 1000000 / D;
+  Quarter(t);
+  Quarter(t);
+  Half(t);
+
+  NOTE = 1000000 / E;
+  Quarter(t);
+  NOTE = 1000000 / G;
+  Quarter(t);
+  Half(t);
+
+  NOTE = 1000000 / E;
+  Quarter(t);
+  NOTE = 1000000 / D;
+  Quarter(t);
+  NOTE = 1000000 / C;
+  Quarter(t);
+  NOTE = 1000000 / D;
+  Quarter(t);
+
+  NOTE = 1000000 / E;
+  Quarter(t);
+  Quarter(t);
+  Half(t);
+
+  NOTE = 1000000 / D;
+  Quarter(t);
+  Quarter(t);
+  NOTE = 1000000 / E;
+  Quarter(t);
+  NOTE = 1000000 / D;
+  Quarter(t);
+  NOTE = 1000000 / C;
+  Whole(t);
+  
+}
+
+void Quarter(int t){
+  Open = 1;
+  delay(t*sp);
+  Open = 0;
+  delay(t*sp);
+}
+
+void Half(int t){
+  Open = 1;
+  delay(t*2*sp);
+  Open = 0;
+  delay(t*2*sp);
+}
+
+void Whole(int t){
+  Open = 1;
+  delay(t*4*sp);
+  Open = 0;
+  delay(t*4*sp);
+}
+
+void Eighth(int t){
+  Open = 1;
+  delay((t*sp)/2);
+  Open = 0;
+  delay((t*sp)/2);
+}
